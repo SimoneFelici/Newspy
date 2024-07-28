@@ -19,7 +19,7 @@ def display_logo():
 \_| \_/\___| \_/\_/ |___/ .__/ \__, |
                         | |     __/ |
                         |_|    |___/
-    [/bold blue]""", justify="left")
+    [/bold blue]""")
 
 def show_menu(sites):
     console.print("1. Inserisci manualmente l'URL", style="bold blue")
@@ -56,7 +56,6 @@ def scrape_site(site):
                 formatted_link = formatted_link.replace('-', ' ').replace('_', ' ')
                 links_list.append((link, formatted_link))
 
-    # Display formatted links with numbered options
     for idx, (link, formatted_link) in enumerate(links_list, 1):
         console.print(f"{idx}. {formatted_link}")
 
@@ -80,7 +79,6 @@ def handle_option(option, sites):
             console.print("Opzione non valida", style="bold red")
 
 def main():
-    # Leggi i dati dei siti web dal file JSON
     with open('sites.json', 'r') as json_file:
         sites = json.load(json_file)
 
