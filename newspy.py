@@ -5,7 +5,7 @@ from rich.prompt import Prompt
 from rich.console import Console
 import json
 
-Images =  True
+Images = True
 
 session = HTMLSession()
 extensions = ['.png', '.jpeg', '.jpg']
@@ -24,20 +24,34 @@ def display_logo():
     [/bold blue]""")
 
 def show_menu(sites):
-    console.print("1. Inserisci manualmente l'URL", style="bold blue")
+    console.print("1. Manual link", style="bold blue")
     for idx, site in enumerate(sites, 2):
         console.print(f"{idx}. {site['name']}", style="bold blue")
 
-def scrape_url(url):
+def scrape_url(url, return_to_site_menu):
     response = session.get(url)
     elements = response.html.find('p, a, h1, h2, h3')
     for element in elements:
         if 'href' in element.attrs:
             link = element.attrs['href']
-            if any(link.endswith(ext) for ext in extensions) and Images ==  True:
+            if any(link.endswith(ext) for ext in extensions) and Images == True:
                 os.system(f"kitty icat {link}")
         else:
             console.print(element.text)
+
+    # Show menu to return to main menu, site menu, or exit
+    console.print("\n[bold blue]Options:[/bold blue]")
+    console.print("0. Return to main menu", style="bold blue")
+    console.print("1. Return to site URL selection", style="bold blue")
+    console.print("2. Exit", style="bold blue")
+    option = Prompt.ask("Select an option", choices=["0", "1", "2"])
+
+    if option == "0":
+        main()
+    elif option == "1":
+        scrape_site(return_to_site_menu)
+    elif option == "2":
+        exit()
 
 def scrape_site(site):
     url = site['url']
@@ -45,12 +59,13 @@ def scrape_site(site):
     response = session.get(url)
     articles = response.html.xpath(xpath)
     links_list = []
+
     for article in articles:
         links = article.xpath('.//a/@href')
         for link in links:
             if link.endswith('/'):
                 link = link[:-1]
-            if not link.startswith('http') or not link.startswith('https'):
+            if not link.startswith('http') and not link.startswith('https'):
                 link = url + link
             if link.startswith(url):
                 formatted_link = link.split('/')[-1]
@@ -58,27 +73,31 @@ def scrape_site(site):
                 formatted_link = formatted_link.replace('-', ' ').replace('_', ' ')
                 links_list.append((link, formatted_link))
 
+    # Add option to go back to the main menu
+    console.print("0. Go back", style="bold blue")
     for idx, (link, formatted_link) in enumerate(links_list, 1):
         console.print(f"{idx}. {formatted_link}")
 
     # Prompt user to select a link
-    option = Prompt.ask("Seleziona un link", choices=[str(i) for i in range(1, len(links_list) + 1)])
-    selected_link = links_list[int(option) - 1][0]
-    console.print(f"Hai selezionato: {selected_link}")
+    option = Prompt.ask("Select a link", choices=[str(i) for i in range(0, len(links_list) + 1)])
+    if option == '0':
+        main()
+    else:
+        selected_link = links_list[int(option) - 1][0]
+        console.print(f"You selected: {selected_link}")
 
-    # Call scrape_url with the selected link
-    scrape_url(selected_link)
+        scrape_url(selected_link, site)
 
 def handle_option(option, sites):
     if option == '1':
         url = Prompt.ask("Enter the url")
-        scrape_url(url)
+        scrape_url(url, None)
     else:
         index = int(option) - 2
         if 0 <= index < len(sites):
             scrape_site(sites[index])
         else:
-            console.print("Opzione non valida", style="bold red")
+            console.print("Invalid option", style="bold red")
 
 def main():
     with open('sites.json', 'r') as json_file:
@@ -86,7 +105,7 @@ def main():
 
     display_logo()
     show_menu(sites)
-    option = Prompt.ask("Seleziona un'opzione")
+    option = Prompt.ask("Select an option")
     handle_option(option, sites)
 
 if __name__ == "__main__":
