@@ -5,6 +5,8 @@ from rich.prompt import Prompt
 from rich.console import Console
 import json
 
+Images =  True
+
 session = HTMLSession()
 extensions = ['.png', '.jpeg', '.jpg']
 console = Console()
@@ -32,7 +34,7 @@ def scrape_url(url):
     for element in elements:
         if 'href' in element.attrs:
             link = element.attrs['href']
-            if any(link.endswith(ext) for ext in extensions):
+            if any(link.endswith(ext) for ext in extensions) and Images ==  True:
                 os.system(f"kitty icat {link}")
         else:
             console.print(element.text)
