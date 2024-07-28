@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Blue's CyberHub",
+    "url": "https://simonefelici.github.io/",
+    "xpath": "//*[@id=\"post-list\"]"
+  },
+  {
+    "name": "TheHackerNews",
+    "url": "https://thehackernews.com/",
+    "xpath": "//body/main/div/div/div[1]/div/div/div[1]"
+  }
+]

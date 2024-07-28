@@ -3,6 +3,7 @@ import os
 from rich import print
 from rich.prompt import Prompt
 from rich.console import Console
+import json
 
 session = HTMLSession()
 extensions = ['.png', '.jpeg', '.jpg']
@@ -20,9 +21,10 @@ def display_logo():
                         |_|    |___/
     [/bold blue]""", justify="left")
 
-def show_menu():
+def show_menu(sites):
     console.print("1. Inserisci manualmente l'URL", style="bold blue")
-    console.print("2. Altra opzione", style="bold blue")
+    for idx, site in enumerate(sites, 2):
+        console.print(f"{idx}. {site['name']}", style="bold blue")
 
 def scrape_url(url):
     response = session.get(url)
@@ -35,20 +37,57 @@ def scrape_url(url):
         else:
             console.print(element.text)
 
-def handle_option(option):
+def scrape_site(site):
+    url = site['url']
+    xpath = site['xpath']
+    response = session.get(url)
+    articles = response.html.xpath(xpath)
+    links_list = []
+    for article in articles:
+        links = article.xpath('.//a/@href')
+        for link in links:
+            if link.endswith('/'):
+                link = link[:-1]
+            if not link.startswith('http') or not link.startswith('https'):
+                link = url + link
+            if link.startswith(url):
+                formatted_link = link.split('/')[-1]
+                formatted_link = formatted_link.split('.')[0]
+                formatted_link = formatted_link.replace('-', ' ').replace('_', ' ')
+                links_list.append((link, formatted_link))
+
+    # Display formatted links with numbered options
+    for idx, (link, formatted_link) in enumerate(links_list, 1):
+        console.print(f"{idx}. {formatted_link}")
+
+    # Prompt user to select a link
+    option = Prompt.ask("Seleziona un link", choices=[str(i) for i in range(1, len(links_list) + 1)])
+    selected_link = links_list[int(option) - 1][0]
+    console.print(f"Hai selezionato: {selected_link}")
+
+    # Call scrape_url with the selected link
+    scrape_url(selected_link)
+
+def handle_option(option, sites):
     if option == '1':
         url = Prompt.ask("Enter the url")
         scrape_url(url)
-    elif option == '2':
-        console.print("Altra opzione selezionata", style="bold green")
     else:
-        console.print("Opzione non valida", style="bold red")
+        index = int(option) - 2
+        if 0 <= index < len(sites):
+            scrape_site(sites[index])
+        else:
+            console.print("Opzione non valida", style="bold red")
 
 def main():
+    # Leggi i dati dei siti web dal file JSON
+    with open('sites.json', 'r') as json_file:
+        sites = json.load(json_file)
+
     display_logo()
-    show_menu()
+    show_menu(sites)
     option = Prompt.ask("Seleziona un'opzione")
-    handle_option(option)
+    handle_option(option, sites)
 
 if __name__ == "__main__":
     main()
