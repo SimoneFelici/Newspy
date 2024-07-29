@@ -30,7 +30,9 @@ The application is designed to be lightweight, fast, and respectful of user priv
 
 ## Usage
 
-Run the main script: ```python3 main.py```
+Edit the file ```sites.json``` and add the name and url of the site, then add the xpath where you wanto to get the articles. 
+
+Run the main script: ```python3 main.py```.
 
 ## License
 
