@@ -1,3 +1,5 @@
+![Newspy2](https://github.com/user-attachments/assets/ba002e7b-e6ff-44b0-a2fd-330b18b6092a)
+
 # Newspy
 
 Newspy is a console-based news scraping and summarization tool designed to provide a streamlined and informative reading experience.
