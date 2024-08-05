@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 global Images
-Images = os.environ.get('IMAGES', 'True').lower() in ('true', '1', 't')
+Images = eval(os.environ.get('IMAGES'))
 
 client = OpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
