@@ -38,11 +38,6 @@ The application is designed to be lightweight, fast, and respectful of user priv
 ## Usage
 
 Edit the file ```sites.json``` and add the name and url of the site you want to read articles form, then add the xpath that has the articles.
-example of xpath:
-![image](https://github.com/user-attachments/assets/a9622b51-bec4-471f-9dcf-c891cb6b42cd)
-
-![image](https://github.com/user-attachments/assets/0fbfa7ee-5ba8-4741-9254-ed9cc330a094)
-
 Run the main script: ```python3 main.py```.
 
 ## License
